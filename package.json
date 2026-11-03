@@ -1,0 +1,14 @@
+{
+  "name": "grade-3-hajj-quiz",
+  "version": "1.0.0",
+  "description": "Grade 3 Islamic Studies Quiz Platform - Chapter 8 Hajj",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/quiz_test.js"
+  },
+  "keywords": ["islamic-studies", "hajj", "quiz", "grade-3", "leaderboard", "education"],
+  "author": "Antigravity Education Team",
+  "license": "ISC"
+}
+
