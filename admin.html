@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Admin Dashboard · Hajj Quiz Platform</title>
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍🏫</text></svg>">
+<style>
+  .admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+  }
+  .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #f0ebff;
+    text-align: center;
+  }
+  .metric-card .val {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--purple-dark);
+  }
+  .metric-card .lbl {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .violation-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+    background: #fee2e2;
+    color: var(--rose);
+    cursor: pointer;
+  }
+  .violation-pill.clean {
+    background: var(--green-light);
+    color: var(--green);
+  }
+  .search-bar {
+    width: 100%;
+    max-width: 340px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid #e5dcff;
+    font-family: inherit;
+    font-size: .92rem;
+  }
+  .search-bar:focus {
+    outline: none;
+    border-color: var(--purple);
+  }
+</style>
+</head>
+<body class="pattern-bg">
+<main class="admin-wrap">
+
+  <!-- ============================ LOGIN SCREEN ============================ -->
+  <section id="admin-login-screen">
+    <div class="card login-box text-center">
+      <div style="font-size:3rem;margin-bottom:8px;">👨‍🏫</div>
+      <h2 style="color:var(--purple-dark);margin-bottom:6px;">Teacher Admin Login</h2>
+      <p class="muted" style="font-size:.9rem;margin-bottom:20px;">Grade 3 Islamic Studies Quiz Management</p>
+      
+      <div class="field">
+        <label for="adm-pass">Teacher Password</label>
+        <input type="password" id="adm-pass" placeholder="Enter teacher password" autocomplete="current-password">
+      </div>
+
+      <div class="btn-row mt-2">
+        <button class="btn" id="btn-adm-login" style="width:100%;">Unlock Dashboard 🔓</button>
+      </div>
+      <p id="adm-login-err" class="muted mt-2" style="color:var(--rose);font-weight:700;font-size:.88rem;"></p>
+      <div class="mt-3">
+        <a href="/" class="muted" style="font-size:.85rem;text-decoration:none;">← Return to Student Quiz</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ DASHBOARD SCREEN ============================ -->
+  <section id="admin-dash-screen" class="hidden">
+    <!-- Topbar -->
+    <div class="admin-topbar">
+      <div>
+        <h2 style="color:var(--purple-dark);margin:0;font-size:1.4rem;">🕌 Teacher Admin Dashboard</h2>
+        <span class="muted" style="font-size:.85rem;">Topic: Chapter 8 – Hajj · Grade 3 Platform</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn ghost small" id="btn-adm-refresh">🔄 Refresh</button>
+        <button class="btn green small" id="btn-adm-export">📥 Export CSV</button>
+        <button class="btn ghost small" id="btn-adm-toggle-review">🔒 Answers Review: <span id="review-status-label">Locked</span></button>
+        <button class="btn ghost small" id="btn-adm-logout" style="color:var(--rose);border-color:#fecdd3;">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- Metrics Row -->
+    <div class="admin-grid">
+      <div class="metric-card">
+        <div class="val" id="met-total">0</div>
+        <div class="lbl">Total Students</div>
+      </div>
+      <div class="metric-card">
+        <div class="val" id="met-in-progress" style="color:var(--gold);">0</div>
+        <div class="lbl">In Progress</div>
+      </div>
+      <div class="metric-card">
+        <div class="val" id="met-submitted" style="color:var(--green);">0</div>
+        <div class="lbl">Submitted</div>
+      </div>
+      <div class="metric-card">
+        <div class="val" id="met-disqualified" style="color:var(--rose);">0</div>
+        <div class="lbl">Disqualified</div>
+      </div>
+      <div class="metric-card">
+        <div class="val" id="met-avg">0</div>
+        <div class="lbl">Class Average (/25)</div>
+      </div>
+      <div class="metric-card">
+        <div class="val" id="met-high-low">—</div>
+        <div class="lbl">High / Low Score</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn on" data-tab="tab-attempts">👥 Student Attempts (<span id="tab-cnt-attempts">0</span>)</button>
+      <button class="tab-btn" data-tab="tab-leaderboard">🏅 Live Leaderboard</button>
+      <button class="tab-btn" data-tab="tab-analytics">📉 Question Difficulty Analysis</button>
+      <button class="tab-btn" data-tab="tab-settings">⚙️ Session Controls &amp; Reset</button>
+    </div>
+
+    <!-- Tab 1: Student Attempts -->
+    <div id="tab-attempts" class="tab-content card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <input type="text" class="search-bar" id="inp-search-attempts" placeholder="🔍 Search by name or class...">
+        <div style="display:flex;gap:8px;">
+          <button class="btn ghost small filter-pill active" data-filter="all">All</button>
+          <button class="btn ghost small filter-pill" data-filter="submitted">Submitted</button>
+          <button class="btn ghost small filter-pill" data-filter="in-progress">In Progress</button>
+          <button class="btn ghost small filter-pill" data-filter="disqualified">Disqualified</button>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Student ID</th>
+              <th>Status</th>
+              <th>Score (/25)</th>
+              <th>Time Taken</th>
+              <th>Anti-Cheat Violations</th>
+              <th>Camera</th>
+              <th>Submission Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-attempts-body">
+            <!-- Injected via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Live Leaderboard -->
+    <div id="tab-leaderboard" class="tab-content card hidden">
+      <h3 style="color:var(--purple-dark);margin-bottom:12px;">🏅 Live Real-Time Leaderboard (Student View)</h3>
+      <p class="muted" style="margin-bottom:18px;">Top students ranked by highest score and fastest time. Disqualified attempts are excluded from student rankings.</p>
+      <div id="adm-lb-container"></div>
+    </div>
+
+    <!-- Tab 3: Question Difficulty Analysis -->
+    <div id="tab-analytics" class="tab-content card hidden">
+      <h3 style="color:var(--purple-dark);margin-bottom:6px;">📉 Question Difficulty Breakdown</h3>
+      <p class="muted" style="margin-bottom:20px;">Review which questions students found easiest and hardest across Chapter 8.</p>
+      <div id="adm-analytics-container"></div>
+    </div>
+
+    <!-- Tab 4: Session Controls & Reset -->
+    <div id="tab-settings" class="tab-content card hidden">
+      <h3 style="color:var(--purple-dark);margin-bottom:12px;">⚙️ Exam Session Controls</h3>
+      
+      <div style="margin-bottom:26px;">
+        <h4 style="margin-bottom:6px;">📖 Answer Review Policy</h4>
+        <p class="muted" style="font-size:.9rem;margin-bottom:10px;">Control whether students can see the correct answers on their results screen.</p>
+        <button class="btn small" id="btn-ctrl-toggle-review">Toggle Student Answer Review</button>
+      </div>
+
+      <div class="danger-zone">
+        <h4 style="color:var(--rose);margin-bottom:6px;">⚠️ Reset Quiz Session / Leaderboard</h4>
+        <p class="muted" style="font-size:.88rem;margin-bottom:14px;">
+          Starting a new class? You can reset the session. All existing quiz attempts are automatically archived to a JSON backup file in <code>data/</code> before resetting.
+        </p>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <button class="btn ghost small" id="btn-reset-lb" style="color:var(--gold);border-color:#fde68a;">🏅 Reset Leaderboard Only</button>
+          <button class="btn small" id="btn-reset-session" style="background:var(--rose);">⚠️ Reset Entire Session &amp; All Attempts</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Audit & Answers Modal Overlay -->
+  <div id="admin-modal-root"></div>
+</main>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
+
